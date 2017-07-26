@@ -1,5 +1,6 @@
 import os
 import io
+import json
 import picamera
 import logging
 import socketserver
@@ -41,12 +42,12 @@ class StreamingOutput(object):
 class StreamingHandler(server.BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == '/':
-            content = PAGE.encode('utf-8')
+            content = PAGE
             self.send_response(200)
             self.send_header('Content-Type', 'text/html')
             self.send_header('Content-Length', len(content))
             self.end_headers()
-            self.wfile.write(content)
+            self.wfile.write(content.encode('utf-8'))
         elif self.path == '/index.html':
             self.send_response(301)
             self.send_header('Location', '/')
@@ -74,16 +75,30 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                     'Removed streaming client %s: %s',
                     self.client_address, str(e))
         elif self.path == '/api/capture':
-            if not os.path.exists('/data/captures'):
-                os.makedirs('/data/captures')
-
-            self.server.camera.capture('/data/captures/%s.jpg' % (datetime.utcnow().isoformat()), use_video_port=True)
-            content = 'ok'.encode('utf-8')
+            content = json.dumps(os.listdir('/data/capture'))
             self.send_response(200)
-            self.send_header('Content-Type', 'text/plain')
+            self.send_header('Content-Type', 'application/json')
             self.send_header('Content-Length', len(content))
             self.end_headers()
             self.wfile.write(content)
+        else:
+            self.send_error(404)
+            self.end_headers()
+
+    def do_POST(self):
+        if self.path == '/api/capture':
+            if not os.path.exists('/data/captures'):
+                os.makedirs('/data/captures')
+
+            filename = '%s.jpg' % (datetime.utcnow().isoformat())
+
+            self.server.camera.capture('/data/captures/%s' % (filename), use_video_port=True)
+            content = '{"status": "ok", "filename": "%s"}' % (filename)
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Content-Length', len(content))
+            self.end_headers()
+            self.wfile.write(content.encode('utf-8'))
         else:
             self.send_error(404)
             self.end_headers()

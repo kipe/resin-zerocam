@@ -87,12 +87,12 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
 
     def do_POST(self):
         if self.path == '/api/capture':
-            if not os.path.exists('/data/captures'):
-                os.makedirs('/data/captures')
+            if not os.path.exists('/data/capture'):
+                os.makedirs('/data/capture')
 
             filename = '%s.jpg' % (datetime.utcnow().isoformat())
 
-            self.server.camera.capture('/data/captures/%s' % (filename), use_video_port=True)
+            self.server.camera.capture('/data/capture/%s' % (filename), use_video_port=True)
             content = '{"status": "ok", "filename": "%s"}' % (filename)
             self.send_response(200)
             self.send_header('Content-Type', 'application/json')

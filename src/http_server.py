@@ -17,10 +17,10 @@ PAGE = '''\
 <h1>RPi Zero W with FishEye Zerocam</h1>
 <img src="stream.mjpg" width="%s" height="%s" onclick="capture();" />
 <script type="text/javascript">
-    function capture() {
+    function capture() \{
         xhttp.open("POST", "/api/capture", true);
         xhttp.send();
-    }
+    \}
 </script>
 </body>
 </html>

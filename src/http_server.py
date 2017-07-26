@@ -3,6 +3,7 @@ import io
 import picamera
 import logging
 import socketserver
+from datetime import datetime
 from threading import Condition
 from http import server
 
@@ -72,6 +73,14 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                 logging.warning(
                     'Removed streaming client %s: %s',
                     self.client_address, str(e))
+        elif self.path == '/api/capture':
+            self.server.camera.capture('/data/captures/%s.jpg' % (datetime.utcnow().isoformat()), use_video_port=True)
+            content = 'ok'
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/plain')
+            self.send_header('Content-Length', len(content))
+            self.end_headers()
+            self.wfile.write(content)
         else:
             self.send_error(404)
             self.end_headers()
@@ -81,13 +90,17 @@ class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
     allow_reuse_address = True
     daemon_threads = True
 
+    def __init__(self, address, handler, camera):
+        self.camera = camera
+        super(StreamingServer, self).__init__(address, handler)
+
 
 with picamera.PiCamera(resolution='%s' % os.environ.get('RESOLUTION', '640x480'), framerate=24) as camera:
     output = StreamingOutput()
     camera.start_recording(output, format='mjpeg')
     try:
         address = ('', 80)
-        server = StreamingServer(address, StreamingHandler)
+        server = StreamingServer(address, StreamingHandler, camera)
         server.serve_forever()
     finally:
         camera.stop_recording()

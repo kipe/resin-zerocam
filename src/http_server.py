@@ -18,6 +18,7 @@ PAGE = '''\
 <img src="stream.mjpg" width="%s" height="%s" onclick="capture();" />
 <script type="text/javascript">
     function capture() {{
+        var xhttp = new XMLHttpRequest();
         xhttp.open("POST", "/api/capture", true);
         xhttp.send();
     }}

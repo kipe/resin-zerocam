@@ -1,6 +1,7 @@
 FROM resin/rpi-raspbian:latest
 
 ENV INITSYSTEM on
+ENV READTHEDOCS True
 
 RUN apt-get update && \
     apt-get install python3 python3-pip libraspberrypi-bin && \

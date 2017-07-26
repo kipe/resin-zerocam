@@ -1,3 +1,4 @@
+import os
 import io
 import picamera
 import logging
@@ -12,10 +13,10 @@ PAGE = '''\
 </head>
 <body>
 <h1>PiCamera MJPEG Streaming Demo</h1>
-<img src="stream.mjpg" width="640" height="480" />
+<img src="stream.mjpg" width="%s" height="%s" />
 </body>
 </html>
-'''
+'''.format(*os.environ.get('RESOLUTION', '640x480').split('x'))
 
 
 class StreamingOutput(object):
@@ -81,7 +82,7 @@ class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
     daemon_threads = True
 
 
-with picamera.PiCamera(resolution='640x480', framerate=24) as camera:
+with picamera.PiCamera(resolution='%s' % os.environ.get('RESOLUTION', '640x480'), framerate=24) as camera:
     output = StreamingOutput()
     camera.start_recording(output, format='mjpeg')
     try:

@@ -1,6 +1,11 @@
-FROM resin/raspberry-pi-python:3.6.1-slim
+FROM resin/rpi-raspbian:latest
 
 ENV INITSYSTEM on
+
+RUN apt-get update && \
+    apt-get install python3 python3-pip && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt /tmp/requirements.txt
 RUN pip3 install -r /tmp/requirements.txt && \

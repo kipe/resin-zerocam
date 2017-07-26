@@ -80,7 +80,7 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
             self.send_header('Content-Type', 'application/json')
             self.send_header('Content-Length', len(content))
             self.end_headers()
-            self.wfile.write(content)
+            self.wfile.write(content.encode('utf-8'))
         else:
             self.send_error(404)
             self.end_headers()

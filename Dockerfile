@@ -1,7 +1,6 @@
 FROM resin/raspberry-pi-python:3.6.1-slim
 
 ENV INITSYSTEM on
-ENV READTHEDOCS True
 
 COPY requirements.txt /tmp/requirements.txt
 RUN pip3 install -r /tmp/requirements.txt && \

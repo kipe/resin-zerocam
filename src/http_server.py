@@ -78,7 +78,7 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                 os.makedirs('/data/captures')
 
             self.server.camera.capture('/data/captures/%s.jpg' % (datetime.utcnow().isoformat()), use_video_port=True)
-            content = 'ok'
+            content = 'ok'.encode('utf-8')
             self.send_response(200)
             self.send_header('Content-Type', 'text/plain')
             self.send_header('Content-Length', len(content))

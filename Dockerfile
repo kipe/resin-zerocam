@@ -3,7 +3,7 @@ FROM resin/rpi-raspbian:latest
 ENV INITSYSTEM on
 
 RUN apt-get update && \
-    apt-get install python3 python3-pip && \
+    apt-get install python3 python3-pip libraspberrypi-bin && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 

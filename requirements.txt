@@ -1,1 +1,1 @@
-picamera==1.12
+picamera==1.13

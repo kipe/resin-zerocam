@@ -15,7 +15,13 @@ PAGE = '''\
 </head>
 <body>
 <h1>RPi Zero W with FishEye Zerocam</h1>
-<img src="stream.mjpg" width="%s" height="%s" />
+<img src="stream.mjpg" width="%s" height="%s" onclick="capture();" />
+<script type="text/javascript">
+    function capture() {
+        xhttp.open("POST", "/api/capture", true);
+        xhttp.send();
+    }
+</script>
 </body>
 </html>
 '''.format(*os.environ.get('RESOLUTION', '640x480').split('x'))

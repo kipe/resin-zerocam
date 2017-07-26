@@ -74,6 +74,9 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                     'Removed streaming client %s: %s',
                     self.client_address, str(e))
         elif self.path == '/api/capture':
+            if not os.path.exists('/data/captures'):
+                os.makedirs('/data/captures')
+
             self.server.camera.capture('/data/captures/%s.jpg' % (datetime.utcnow().isoformat()), use_video_port=True)
             content = 'ok'
             self.send_response(200)

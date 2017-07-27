@@ -1,6 +1,8 @@
 import os
 import io
 import json
+import shutil
+import fnmatch
 import picamera
 import logging
 import socketserver
@@ -84,6 +86,19 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
             self.send_header('Content-Length', len(content))
             self.end_headers()
             self.wfile.write(content.encode('utf-8'))
+        elif fnmatch.fnmatch(self.path, '/api/capture/*.jpg'):
+            filepath = os.path.join('/data/capture/', self.path.split('/')[-1])
+
+            if not os.path.exists(filepath):
+                self.send_error(404)
+                self.end_headers()
+                return
+
+            self.send_response(200)
+            self.send_header('Content-type', 'image/jpeg')
+            self.end_headers()
+            with open(filepath, 'rb') as content:
+                shutil.copyfileobj(content, self.wfile)
         else:
             self.send_error(404)
             self.end_headers()

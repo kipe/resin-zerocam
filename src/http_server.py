@@ -1,7 +1,6 @@
 import os
 import io
 import json
-import shutil
 import fnmatch
 import picamera
 import logging
@@ -104,7 +103,7 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
             self.send_header('Content-type', 'image/jpeg')
             self.end_headers()
             with open(filepath, 'rb') as content:
-                shutil.copyfileobj(content, self.wfile)
+                self.wfile.write(content.read())
             return
 
         self.send_error(404)

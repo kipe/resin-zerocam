@@ -1,6 +1,7 @@
 import os
 import io
 import json
+import shutil
 import fnmatch
 import picamera
 import logging
@@ -104,7 +105,7 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
             self.send_header('Content-Length', os.stat(filepath).st_size)
             self.end_headers()
             with open(filepath, 'rb') as content:
-                self.wfile.write(content.read())
+                shutil.copyfileobj(content, self.wfile)
             return
 
         self.send_error(404)

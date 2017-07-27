@@ -57,7 +57,9 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
             self.send_header('Content-Length', len(content))
             self.end_headers()
             self.wfile.write(content.encode('utf-8'))
-        elif self.path == '/stream.mjpg':
+            return
+
+        if self.path == '/stream.mjpg':
             self.send_response(200)
             self.send_header('Age', 0)
             self.send_header('Cache-Control', 'no-cache, private')
@@ -79,14 +81,18 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                 logging.warning(
                     'Removed streaming client %s: %s',
                     self.client_address, str(e))
-        elif self.path == '/api/capture':
+            return
+
+        if self.path == '/api/capture':
             content = json.dumps(os.listdir('/data/capture'))
             self.send_response(200)
             self.send_header('Content-Type', 'application/json')
             self.send_header('Content-Length', len(content))
             self.end_headers()
             self.wfile.write(content.encode('utf-8'))
-        elif fnmatch.fnmatch(self.path, '/api/capture/*.jpg'):
+            return
+
+        if fnmatch.fnmatch(self.path, '/api/capture/*.jpg'):
             filepath = os.path.join('/data/capture/', self.path.split('/')[-1])
 
             if not os.path.exists(filepath):
@@ -99,9 +105,10 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
             self.end_headers()
             with open(filepath, 'rb') as content:
                 shutil.copyfileobj(content, self.wfile)
-        else:
-            self.send_error(404)
-            self.end_headers()
+            return
+
+        self.send_error(404)
+        self.end_headers()
 
     def do_POST(self):
         if self.path == '/api/capture':
@@ -117,9 +124,27 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
             self.send_header('Content-Length', len(content))
             self.end_headers()
             self.wfile.write(content.encode('utf-8'))
-        else:
-            self.send_error(404)
+            return
+
+        self.send_error(404)
+        self.end_headers()
+
+    def do_DELETE(self):
+        if fnmatch.fnmatch(self.path, '/api/capture/*.jpg'):
+            filepath = os.path.join('/data/capture/', self.path.split('/')[-1])
+
+            if not os.path.exists(filepath):
+                self.send_error(404)
+                self.end_headers()
+                return
+
+            os.remove(filepath)
+            self.send_response(204)
             self.end_headers()
+            return
+
+        self.send_error(404)
+        self.end_headers()
 
 
 class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):

@@ -55,10 +55,6 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
             self.send_header('Content-Length', len(content))
             self.end_headers()
             self.wfile.write(content.encode('utf-8'))
-        elif self.path == '/index.html':
-            self.send_response(301)
-            self.send_header('Location', '/')
-            self.end_headers()
         elif self.path == '/stream.mjpg':
             self.send_response(200)
             self.send_header('Age', 0)

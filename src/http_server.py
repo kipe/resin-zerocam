@@ -100,7 +100,8 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                 return
 
             self.send_response(200)
-            self.send_header('Content-type', 'image/jpeg')
+            self.send_header('Content-Type', 'image/jpeg')
+            self.send_header('Content-Length', os.stat(filepath).st_size)
             self.end_headers()
             with open(filepath, 'rb') as content:
                 self.wfile.write(content.read())

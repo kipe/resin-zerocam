@@ -84,7 +84,14 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
             return
 
         if self.path == '/api/capture':
-            content = json.dumps(sorted(os.listdir('/data/capture')))
+            content = json.dumps([
+                {
+                    'filename': filename,
+                    'link': '/api/capture/%s' % (filename),
+                    'size': os.stat(os.path.join('/data/capture', filename)).st_size,
+                }
+                for filename in sorted(os.listdir('/data/capture'))
+            ])
             self.send_response(200)
             self.send_header('Content-Type', 'application/json')
             self.send_header('Content-Length', len(content))

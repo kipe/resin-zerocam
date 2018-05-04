@@ -164,7 +164,7 @@ class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
         super(StreamingServer, self).__init__(address, handler)
 
 
-with picamera.PiCamera(resolution='%s' % os.environ.get('RESOLUTION', '640x480'), framerate=24) as camera:
+with picamera.PiCamera(resolution='%s' % os.environ.get('RESOLUTION', '640x480'), framerate=int(os.environ.get('FRAMERATE', 30))) as camera:
     output = StreamingOutput()
     camera.start_recording(output, format='mjpeg')
     try:

@@ -10,6 +10,9 @@ from datetime import datetime
 from threading import Condition
 from http import server
 
+RESOLUTION = os.environ.get('RESOLUTION', '640x480')
+FRAMERATE = int(os.environ.get('FRAMERATE', 30))
+
 PAGE = '''\
 <html>
 <head>
@@ -27,7 +30,7 @@ PAGE = '''\
 </script>
 </body>
 </html>
-'''.format(*os.environ.get('RESOLUTION', '640x480').split('x'))
+'''.format(*RESOLUTION.split('x'))
 
 
 class StreamingOutput(object):
@@ -164,7 +167,7 @@ class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
         super(StreamingServer, self).__init__(address, handler)
 
 
-with picamera.PiCamera(resolution='%s' % os.environ.get('RESOLUTION', '640x480'), framerate=int(os.environ.get('FRAMERATE', 30))) as camera:
+with picamera.PiCamera(resolution='%s' % RESOLUTION, framerate=FRAMERATE) as camera:
     output = StreamingOutput()
     camera.start_recording(output, format='mjpeg')
     try:

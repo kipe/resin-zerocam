@@ -12,6 +12,10 @@ from http import server
 
 RESOLUTION = os.environ.get('RESOLUTION', '640x480')
 FRAMERATE = int(os.environ.get('FRAMERATE', 24))
+ROTATION = int(os.environ.get('ROTATION', 0))
+
+if ROTATION not in [0, 90, 180, 270]:
+    ROTATION = 0
 
 
 PAGE = '''\
@@ -31,7 +35,7 @@ PAGE = '''\
 </script>
 </body>
 </html>
-'''.format(*RESOLUTION.split('x'))
+'''.format(*(RESOLUTION.split('x') if ROTATION in [0, 180] else list(reversed(RESOLUTION.split('x')))))
 
 
 class StreamingOutput(object):
@@ -169,7 +173,9 @@ class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
         super(StreamingServer, self).__init__(address, handler)
 
 
-with picamera.PiCamera(resolution='%s' % RESOLUTION, framerate=FRAMERATE) as camera:
+with picamera.PiCamera(resolution='%s' % RESOLUTION,
+                       framerate=FRAMERATE,
+                       rotation=ROTATION) as camera:
     camera.annotate_background = picamera.Color('black')
     camera.annotate_text = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%SZ')
 

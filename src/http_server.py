@@ -11,7 +11,8 @@ from threading import Condition
 from http import server
 
 RESOLUTION = os.environ.get('RESOLUTION', '640x480')
-FRAMERATE = int(os.environ.get('FRAMERATE', 30))
+FRAMERATE = int(os.environ.get('FRAMERATE', 24))
+
 
 PAGE = '''\
 <html>

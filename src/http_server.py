@@ -174,8 +174,8 @@ class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
 
 
 with picamera.PiCamera(resolution='%s' % RESOLUTION,
-                       framerate=FRAMERATE,
-                       rotation=ROTATION) as camera:
+                       framerate=FRAMERATE) as camera:
+    camera.rotation = ROTATION
     camera.annotate_background = picamera.Color('black')
     camera.annotate_text = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%SZ')
 

@@ -71,6 +71,7 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
             self.end_headers()
             try:
                 while True:
+                    self.server.camera.annotate_text = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%SZ')
                     with output.condition:
                         output.condition.wait()
                         frame = output.frame
@@ -168,6 +169,9 @@ class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
 
 
 with picamera.PiCamera(resolution='%s' % RESOLUTION, framerate=FRAMERATE) as camera:
+    camera.annotate_background = picamera.Color('black')
+    camera.annotate_text = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%SZ')
+
     output = StreamingOutput()
     camera.start_recording(output, format='mjpeg')
     try:

@@ -20,7 +20,7 @@ if ROTATION not in [0, 90, 180, 270]:
     ROTATION = 0
 
 jinja = Environment(
-    loader=FileSystemLoader('templates'),
+    loader=FileSystemLoader(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'templates')),
     autoescape=select_autoescape(['html', 'xml'])
 )
 

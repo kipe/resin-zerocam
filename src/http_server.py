@@ -9,7 +9,9 @@ import socketserver
 from datetime import datetime
 from threading import Condition
 from http import server
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 
+HTTP_PORT = int(os.environ.get('HTTP_PORT', '80'))
 RESOLUTION = os.environ.get('RESOLUTION', '640x480')
 FRAMERATE = int(os.environ.get('FRAMERATE', 24))
 ROTATION = int(os.environ.get('ROTATION', 0))
@@ -17,25 +19,10 @@ ROTATION = int(os.environ.get('ROTATION', 0))
 if ROTATION not in [0, 90, 180, 270]:
     ROTATION = 0
 
-
-PAGE = '''\
-<html>
-<head>
-<title>RPi Zero W with FishEye Zerocam</title>
-</head>
-<body>
-<h1>RPi Zero W with FishEye Zerocam</h1>
-<img src="stream.mjpg" width="%s" height="%s" onclick="capture();" />
-<script type="text/javascript">
-    function capture() {{
-        var xhttp = new XMLHttpRequest();
-        xhttp.open("POST", "/api/capture", true);
-        xhttp.send();
-    }}
-</script>
-</body>
-</html>
-'''.format(*(RESOLUTION.split('x') if ROTATION in [0, 180] else list(reversed(RESOLUTION.split('x')))))
+jinja = Environment(
+    loader=FileSystemLoader('templates'),
+    autoescape=select_autoescape(['html', 'xml'])
+)
 
 
 class StreamingOutput(object):
@@ -59,7 +46,12 @@ class StreamingOutput(object):
 class StreamingHandler(server.BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == '/':
-            content = PAGE
+            width, height = RESOLUTION.split('x') if ROTATION in [0, 180] else list(reversed(RESOLUTION.split('x')))
+            content = jinja.get_template('index.html').render(
+                width=width,
+                height=height,
+            )
+
             self.send_response(200)
             self.send_header('Content-Type', 'text/html')
             self.send_header('Content-Length', len(content))
@@ -182,7 +174,7 @@ with picamera.PiCamera(resolution='%s' % RESOLUTION,
     output = StreamingOutput()
     camera.start_recording(output, format='mjpeg')
     try:
-        address = ('', 80)
+        address = ('', HTTP_PORT)
         server = StreamingServer(address, StreamingHandler, camera)
         server.serve_forever()
     finally:

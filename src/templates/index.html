@@ -1,0 +1,20 @@
+<html>
+<head>
+    <title>RPi Zero W with FishEye Zerocam</title>
+</head>
+
+<body>
+    <h1>RPi Zero W with FishEye Zerocam</h1>
+    <img src="stream.mjpg" width="{{ width }}px" height="{{ height }}px" onclick="capture();" />
+    <script type="text/javascript">
+        function capture() {
+            {
+                var xhttp = new XMLHttpRequest();
+                xhttp.open("POST", "/api/capture", true);
+                xhttp.send();
+            }
+        }
+    </script>
+</body>
+
+</html>

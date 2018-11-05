@@ -10,4 +10,6 @@ RUN wget -O /tmp/motion.deb https://github.com/Motion-Project/motion/releases/do
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+COPY /etc /etc
+
 CMD ["sleep", "99999999"]

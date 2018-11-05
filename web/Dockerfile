@@ -1,4 +1,4 @@
-FROM resin/rpi-raspbian:latest
+FROM resin/rpi-raspbian:stretch-20181024
 
 ENV INITSYSTEM on
 ENV READTHEDOCS True

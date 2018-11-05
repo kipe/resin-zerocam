@@ -3,7 +3,7 @@ import io
 import json
 import shutil
 import fnmatch
-import picamera
+# import picamera
 import logging
 import socketserver
 from datetime import datetime
@@ -12,7 +12,7 @@ from http import server
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 HTTP_PORT = int(os.environ.get('HTTP_PORT', '80'))
-RESOLUTION = os.environ.get('RESOLUTION', '640x480')
+RESOLUTION = os.environ.get('RESOLUTION', '1920x1080')
 FRAMERATE = int(os.environ.get('FRAMERATE', 24))
 ROTATION = int(os.environ.get('ROTATION', 0))
 
@@ -165,17 +165,17 @@ class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
         super(StreamingServer, self).__init__(address, handler)
 
 
-with picamera.PiCamera(resolution='%s' % RESOLUTION,
-                       framerate=FRAMERATE) as camera:
-    camera.rotation = ROTATION
-    camera.annotate_background = picamera.Color('black')
-    camera.annotate_text = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%SZ')
+# with picamera.PiCamera(resolution='%s' % RESOLUTION,
+#                        framerate=FRAMERATE) as camera:
+#     camera.rotation = ROTATION
+#     camera.annotate_background = picamera.Color('black')
+#     camera.annotate_text = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%SZ')
 
-    output = StreamingOutput()
-    camera.start_recording(output, format='mjpeg')
-    try:
-        address = ('', HTTP_PORT)
-        server = StreamingServer(address, StreamingHandler, camera)
-        server.serve_forever()
-    finally:
-        camera.stop_recording()
+#     output = StreamingOutput()
+#     camera.start_recording(output, format='mjpeg')
+#     try:
+address = ('', HTTP_PORT)
+server = StreamingServer(address, StreamingHandler, None)
+server.serve_forever()
+    # finally:
+    #     camera.stop_recording()
